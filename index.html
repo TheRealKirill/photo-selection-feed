@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+  </head>
+  <body>
+    <div id="gallery" class="gallery"></div>
+    <script>
+      const photos = [
+        {
+          id: "0",
+          src:
+            "https://novyj-urengoj.el43.ru/lyustri/469410db93f46bc8d2eb3a0b9717d326.jpeg",
+        },
+        {
+          id: "1",
+          src:
+            "https://svetoevolution.ru/upload/iblock/095/0079e3e6d496ad07cee7fd63d3d7c9b2.jpeg",
+        },
+        {
+          id: "2",
+          src:
+            "https://svetoevolution.ru/upload/iblock/095/0079e3e6d496ad07cee7fd63d3d7c9b2.jpeg",
+        },
+        {
+          id: "3",
+          src:
+            "https://irkutsk.svetroom.ru/wa-data/public/shop/products/93/18/51893/images/70526/70526.970.jpeg",
+        },
+        {
+          id: "4",
+          src:
+            "https://www.millionpodarkov.ru/incoming_img/fotolight-promo.ru/7987751.jpg",
+        },
+        {
+          id: "5",
+          src:
+            "https://www.millionpodarkov.ru/incoming_img/fotolight-promo.ru/7987414.jpg",
+        },
+        {
+          id: "6",
+          src:
+            "https://topsto-crimea.ru/images/detailed/392/1501878103.798.jpg",
+        },
+        {
+          id: "7",
+          src:
+            "https://samara.svetroom.ru/wa-data/public/shop/products/25/17/51725/images/70358/70358.970.jpeg",
+        },
+        {
+          id: "8",
+          src:
+            "http://makesimple.ru/upload/iblock/75d/75d8637d9e507a33c1e52dc53f73ed2c.jpg",
+        },
+      ];
+
+      class Gallery {
+        constructor(obj) {
+          this.photos = obj.photos;
+          this.size = obj.size;
+          this.current = obj.current;
+          this.container = obj.container;
+        }
+
+        render() {
+          const photos = this.photos;
+          const size = this.size;
+          const current = this.current;
+          const gallery = this.container;
+
+          const width = size * 100 + 4 + (size - 1) * 10;
+
+          gallery.style.width = width + 160 + "px";
+
+          const windowPhotos = document.createElement("div");
+          windowPhotos.classList.add("window");
+          windowPhotos.style.width = width + "px";
+          gallery.append(windowPhotos);
+
+          const feed = document.createElement("div");
+          feed.classList.add("feed");
+          windowPhotos.append(feed);
+
+          const buttonLeft = document.createElement("div");
+          buttonLeft.classList.add("button");
+          buttonLeft.style.background =
+            "no-repeat center/100% url(img/1486348526-arrow-back-backwards-repeat-previous_80453.png)";
+          gallery.prepend(buttonLeft);
+
+          let counter = 0;
+
+          const choicePhoto = (event) => {
+            const { id } = event.target;
+            const selectedItem = document.getElementsByClassName(
+              "selectedItem"
+            )[0];
+
+            if (id !== +selectedItem.id) {
+              selectedItem.classList.remove("selectedItem");
+              event.target.classList.add("selectedItem");
+              if (
+                id > parseInt(size / 2) &&
+                id < photos[photos.length - parseInt(size / 2) + 1].id
+              ) {
+                counter = id - parseInt(size / 2);
+                feed.style.marginLeft = counter * -110 + "px";
+              }
+
+              if (id <= photos[parseInt(size / 2)].id) {
+                feed.style.marginLeft = "0px";
+              } else if (id >= photos[photos.length - parseInt(size / 2)].id) {
+                feed.style.marginLeft =
+                  (photos[photos.length - 1].id - parseInt(size / 2) * 2) *
+                    -110 +
+                  "px";
+              }
+            }
+          };
+
+          photos.forEach((item) => {
+            const photo = document.createElement("div");
+            photo.classList.add("photo");
+            photo.style.background = `no-repeat center/100% url(${item.src})`;
+            photo.id = item.id;
+            photo.addEventListener("click", choicePhoto);
+            feed.append(photo);
+          });
+
+          const buttonRight = document.createElement("div");
+          buttonRight.classList.add("button");
+          buttonRight.style.background =
+            "no-repeat center/100% url(img/1486348525-music-forward-front-next-arrow_80457.png)";
+          gallery.append(buttonRight);
+
+          document.getElementById(current).classList.add("selectedItem");
+
+          buttonRight.addEventListener("click", () => {
+            const selectedItem = document.getElementsByClassName(
+              "selectedItem"
+            )[0];
+
+            if (selectedItem.id < photos[photos.length - 1].id) {
+              selectedItem.classList.remove("selectedItem");
+              selectedItem.nextElementSibling.classList.add("selectedItem");
+              if (
+                +selectedItem.id + parseInt(size / 2) <
+                  photos[photos.length - 1].id &&
+                +selectedItem.id >= photos[parseInt(size / 2)].id
+              ) {
+                ++counter;
+                feed.style.marginLeft = counter * -110 + "px";
+              }
+            }
+          });
+
+          buttonLeft.addEventListener("click", () => {
+            const selectedItem = document.getElementsByClassName(
+              "selectedItem"
+            )[0];
+
+            if (selectedItem.id > 0) {
+              selectedItem.classList.remove("selectedItem");
+              selectedItem.previousElementSibling.classList.add("selectedItem");
+              if (
+                +selectedItem.id - parseInt(size / 2) >= 0 &&
+                +selectedItem.id + parseInt(size / 2) < photos.length &&
+                counter > 0
+              ) {
+                feed.style.marginLeft = -counter * 110 + 110 + "px";
+                --counter;
+              }
+            }
+          });
+        }
+      }
+
+      const gallery = new Gallery({
+        photos,
+        size: 5,
+        current: "2",
+        container: document.querySelector("#gallery"),
+      });
+      gallery.render();
+    </script>
+  </body>
+</html>
